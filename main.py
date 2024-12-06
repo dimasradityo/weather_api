@@ -4,6 +4,8 @@ import numpy as np
 
 app = Flask('__name__')
 
+stations_reference = pd.read_csv('data_small/stations.txt', skiprows=17)
+
 def get_temperature(station_id, observation_date):
     station_filename = 'TG_STAID'+str(station_id).zfill(6)+'.txt'
     df = pd.read_csv('data_small/' + station_filename, skiprows=20, parse_dates=['    DATE'])
@@ -14,7 +16,7 @@ def get_temperature(station_id, observation_date):
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', data=stations_reference.to_html())
 
 @app.route('/api/v1/<station>/<date>')
 def about(station, date):
@@ -24,13 +26,6 @@ def about(station, date):
 "date": date,
 "temperature": temperature
     }
-
-# @app.route('/api/v1/<keyword>')
-# def api(keyword):
-#     return {
-# "definition": keyword.toupper(),
-# "keyword": keyword
-#     }
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
