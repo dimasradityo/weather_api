@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 import pandas as pd
 import numpy as np
+import datetime as dt
 
 app = Flask('__name__')
 
@@ -34,7 +35,16 @@ def about(station, date):
 @app.route('/api/v1/<station>')
 def get_all_temperature_for_station(station):
     df = clean_data(station)
-    return df[['    DATE','TG']].to_dict(orient='records')
+    result = df[['    DATE','TG']].to_dict(orient='records')
+    return result
+
+# GET all temperature data for a station only for specified year
+@app.route('/api/v1/yearly/<station>/<year>')
+def get_all_temperature_for_station_year(station, year):
+    df = clean_data(station)
+    yearly_data = df[df['    DATE'].dt.year == int(year)]
+    result = yearly_data[['    DATE','TG']].to_dict(orient='records')
+    return result
 
 if __name__ == '__main__':
     app.run(debug=True)
